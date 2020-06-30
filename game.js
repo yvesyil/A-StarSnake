@@ -33,8 +33,16 @@ class Game {
         this.tileCount = 30;
         this.snake = new Snake();
         this.fruit = new Fruit();
+        this.initAi();
 
         this.timer = setInterval(this.mainLoop.bind(this), 1000 / 15);
+    }
+    initAi() {
+        this.ai = new Astar(this.tileCount, this.tileCount);
+        this.ai.initGrid();
+        this.ai.findPath(this.snake.pos, this.fruit.pos);
+        this.ai.path.reverse();
+        
     }
     reset() {
         clearInterval(this.timer);
@@ -44,7 +52,13 @@ class Game {
     }
     mainLoop() {
         this.update();
-        this.draw(); 
+        this.draw();
+        if (this.ai.path.length > 1)
+            this.aiLoop();
+        else {
+            this.ai.path = [];
+            this.initAi();
+        }
     }
     update() {
         this.snake.pos.x += this.snake.velocity.x;
@@ -106,11 +120,35 @@ class Game {
         }
         if (event.keyCode === 27) { this.reset(); }
     }
+    aiLoop() {
+        let initial = this.ai.path[0];
+        let point = this.ai.path[1];
+        if (point.x - initial.x < 0 && this.snake.velocity.x !== 1) {
+            this.snake.velocity.x = -1;
+            this.snake.velocity.y = 0;
+        }
+        if (point.y - initial.y < 0 && this.snake.velocity.y !== 1) {
+            this.snake.velocity.x = 0;
+            this.snake.velocity.y = -1;
+        }
+        if (point.x - initial.x > 0 && this.snake.velocity.x !== -1) {
+            this.snake.velocity.x = 1;
+            this.snake.velocity.y = 0;
+        }
+        if (point.y - initial.y > 0 && this.snake.velocity.y !== -1) {
+            this.snake.velocity.x = 0;
+            this.snake.velocity.y = 1;
+        }
+        this.ai.path.shift();
+    }
 }
 
 let game = new Game();
-window.onload = () => game.init();
-
-let ai = new Astar(game.tileCount, game.tileCount);
-ai.initGrid();
-ai.findPath(game.snake.pos, game.fruit.pos);
+window.onload = () => {
+    game.init();
+    // let ai = new Astar(game.tileCount, game.tileCount);
+    // ai.initGrid();
+    // ai.findPath(game.snake.pos, game.fruit.pos); 
+    // ai.path.reverse();
+    // let initial = ai.path[0];
+}
