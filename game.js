@@ -146,9 +146,4 @@ class Game {
 let game = new Game();
 window.onload = () => {
     game.init();
-    // let ai = new Astar(game.tileCount, game.tileCount);
-    // ai.initGrid();
-    // ai.findPath(game.snake.pos, game.fruit.pos); 
-    // ai.path.reverse();
-    // let initial = ai.path[0];
 }

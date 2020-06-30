@@ -57,7 +57,7 @@ class Astar {
     heuristic(a, b) {
         return Math.sqrt((a.x - b.x) + (a.y - b.y));
     }
-    //this needs tweaking
+    //may need some tweaking
     findPath(s, g) {
         let start = this.grid[s.x][s.y];
         let goal = this.grid[g.x][g.y];
