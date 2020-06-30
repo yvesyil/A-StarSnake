@@ -33,7 +33,7 @@ class Game {
         this.tileCount = 30;
         this.snake = new Snake();
         this.fruit = new Fruit();
-        this.ai = new Astar(tileCount, tileCount);
+        this.ai = new Astar(this.tileCount, this.tileCount);
         this.ai.initGrid();
 
         this.timer = setInterval(this.mainLoop.bind(this), 1000 / 15);

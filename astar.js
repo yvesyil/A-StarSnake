@@ -9,13 +9,13 @@ class Point {
     }
     addNeighbors(that) {
         if (this.x < that.col - 1)
-            this.neighbors.push(grid[this.x + 1][this.y]);
+            this.neighbors.push(that.grid[this.x + 1][this.y]);
         if (this.x > 0)
-            this.neighbors.push(grid[this.x - 1][this.y]);
+            this.neighbors.push(that.grid[this.x - 1][this.y]);
         if (this.y < that.row - 1)
-            this.neighbors.push(grid[this.x][this.y + 1]);
+            this.neighbors.push(that.grid[this.x][this.y + 1]);
         if (this.y > 0)
-            this.neighbors.push(grid[this.x][this.y - 1]);
+            this.neighbors.push(that.grid[this.x][this.y - 1]);
     }
 }
 
@@ -27,17 +27,19 @@ class Astar {
         this.closedSet = [];
     }
     initGrid() {
-        that = this;
+        let that = this;
         this.grid = new Array(this.row);
-        this.grid.forEach(row => new Array(that.col));
+        for (let i = 0; i < this.grid.length; i++) {
+            this.grid[i] = new Array(this.col);
+        }
 
-        for (let i = 0; i < this.row.lenght; i++) {
-            for (let j = 0; j < this.col.lenght; j++) {
+        for (let i = 0; i < this.row; i++) {
+            for (let j = 0; j < this.col; j++) {
                 this.grid[i][j] = new Point(i, j);
             }
         }
-        for (let i = 0; i < this.row.lenght; i++) {
-            for (let j = 0; j < this.col.lenght; j++) {
+        for (let i = 0; i < this.row; i++) {
+            for (let j = 0; j < this.col; j++) {
                 this.grid[i][j].addNeighbors(this);
             }
         }
@@ -69,6 +71,7 @@ class Astar {
                             this.openSet.push(neighbor);
                         }
                         neighbor.h = heuristic(neighbor, goal);
+                        neighbor.f = neighbor.g + neighbor.h;
                     }
                 }
             } 
