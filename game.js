@@ -33,6 +33,8 @@ class Game {
         this.tileCount = 30;
         this.snake = new Snake();
         this.fruit = new Fruit();
+        this.ai = new Astar(tileCount, tileCount);
+        this.ai.initGrid();
 
         this.timer = setInterval(this.mainLoop.bind(this), 1000 / 15);
     }
@@ -49,6 +51,7 @@ class Game {
     update() {
         this.snake.pos.x += this.snake.velocity.x;
         this.snake.pos.y += this.snake.velocity.y;
+        this.ai.findPath(this.snake.pos, this.fruit.pos);
 
         if (this.snake.pos.x < 0) { this.snake.pos.x = this.tileCount - 1; }
         if (this.snake.pos.y < 0) { this.snake.pos.y = this.tileCount - 1; }
