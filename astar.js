@@ -4,7 +4,7 @@ Array.prototype.remove = function(el) {
        this.splice(i, 1)
     }
     return this; 
- }
+}
 
 class Point {
     constructor(x, y) {
@@ -71,7 +71,6 @@ class Astar {
             }
             let current = this.openSet[winner];
             if (this.openSet[winner] === goal) {
-                //this.path = [];
                 let temp = current;
                 this.path.push(temp);
                 while (temp.prev) {
