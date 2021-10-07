@@ -35,7 +35,7 @@ class Game {
         this.fruit = new Fruit();
         this.initAi();
 
-        this.timer = setInterval(this.mainLoop.bind(this), 1000 / 15);
+        this.timer = setInterval(this.mainLoop.bind(this), 1000 / 50);
     }
     initAi() {
         this.ai = new Astar(this.tileCount, this.tileCount);
