@@ -1,30 +1,35 @@
+import {Map} from './map.js';
+
 export class Point {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    // minimize f value
+    /** value to minimize */
     this.f = 0;
+    /** cost of path from start to n */
     this.g = 0;
+    /** cost of the cheapest path from n to goal */
     this.h = 0;
     this.neighbors = [];
-    this.prev = undefined;
+    this.previous = undefined;
+    this.occupied = false;
   }
 
   /**
-   * @param {Array<Array<Point>>} map
+   * @param {Map} map
    */
   addNeighbors(map) {
-    if (this.x < map[0].length - 1) {
-      this.neighbors.push(map[this.x+1][this.y]);
+    if (this.x < map.col - 1) {
+      this.neighbors.push(map.getPoint(this.x + 1, this.y));
     }
     if (this.x > 0) {
-      this.neighbors.push(map[this.x][this.y+1]);
+      this.neighbors.push(map.getPoint(this.x - 1, this.y));
     }
-    if (this.y < map.length - 1) {
-      this.neighbors.push(map[this.x-1][this.y]);
+    if (this.y < map.row - 1) {
+      this.neighbors.push(map.getPoint(this.x, this.y + 1));
     }
     if (this.y > 0) {
-      this.neighbors.push(map[this.x][this.y-1]);
+      this.neighbors.push(map.getPoint(this.x, this.y - 1));
     }
   }
 

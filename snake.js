@@ -24,28 +24,26 @@ export class Snake {
     this.pos = newPos;
   }
 
-  activatePathfinder() {
-    this.pathfinderInterval = setInterval(() => {
-      let initial = this.pathfinder.path[0];
-      let point = this.pathfinder.path[1];
-      if (point.x - initial.x < 0 && this.velocity.x !== 1) {
-        this.velocity.x = -1;
-        this.velocity.y = 0;
-      }
-      if (point.y - initial.y < 0 && this.velocity.y !== 1) {
-        this.velocity.x = 0;
-        this.velocity.y = -1;
-      }
-      if (point.x - initial.x > 0 && this.velocity.x !== -1) {
-        this.velocity.x = 1;
-        this.velocity.y = 0;
-      }
-      if (point.y - initial.y > 0 && this.velocity.y !== -1) {
-        this.velocity.x = 0;
-        this.velocity.y = 1;
-      }
-      this.pathfinder.path.shift();
-    }, this.pathfinder.speed);
+  moveToNextPoint() {
+    let initial = this.pos;
+    let point = this.pathfinder.path[0];
+    if (point.x - initial.x < 0 && this.velocity.x !== 1) {
+      this.velocity.x = -1;
+      this.velocity.y = 0;
+    }
+    if (point.y - initial.y < 0 && this.velocity.y !== 1) {
+      this.velocity.x = 0;
+      this.velocity.y = -1;
+    }
+    if (point.x - initial.x > 0 && this.velocity.x !== -1) {
+      this.velocity.x = 1;
+      this.velocity.y = 0;
+    }
+    if (point.y - initial.y > 0 && this.velocity.y !== -1) {
+      this.velocity.x = 0;
+      this.velocity.y = 1;
+    }
+    this.pathfinder.path.shift();
   }
 }
 

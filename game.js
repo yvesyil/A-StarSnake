@@ -1,7 +1,6 @@
 import {Map} from './map.js';
 import {Pathfinder} from './pathfinder.js';
 import {Snake} from './snake.js';
-import {Point} from './point.js';
 
 /**
  * @typedef {Object} Config
@@ -25,14 +24,16 @@ export class Game {
     this.map = new Map(this.tileCount, this.tileCount);
 
     this.fruit = this.map.getPoint(7, 7);
-    this.snake = new Snake(this.map.getPoint(0, 0),
+    this.snake = new Snake(this.map.getPoint(4, 5),
         new Pathfinder(this.map, this.config.speed));
 
     this.timer = setInterval(this.loop.bind(this), this.config.speed);
+    this.snake.pathfinder.find(this.snake.pos, this.fruit);
   }
 
   reset() {
     clearInterval(this.timer);
+    this.snake.deactivePathfinder();
     delete this.map;
     delete this.snake;
     this.start();
@@ -44,39 +45,63 @@ export class Game {
   }
 
   update() {
-    this.snake.pos.x += this.snake.velocity.x;
-    this.snake.pos.y += this.snake.velocity.y;
+    // update velocity
+    this.snake.moveToNextPoint();
 
-    if (this.snake.pos.x < 0) {
-      this.snake.updatePosition(this.map.getPoint(this.map.row))
-      this.snake.pos.x = this.tileCount - 1;
+    // update position
+    let tentativeX = this.snake.pos.x + this.snake.velocity.x;
+    let tentativeY = this.snake.pos.y + this.snake.velocity.y;
+    let updateFlag = false;
+
+    if (tentativeX < 0) {
+      this.snake.updatePosition(
+          this.map.getPoint(this.map.row - 1, this.snake.pos.y));
+      updateFlag = true;
     }
-    if (this.snake.pos.y < 0) {
-      this.snake.pos.y = this.tileCount - 1;
+    if (tentativeY < 0) {
+      this.snake.updatePosition(
+          this.map.getPoint(this.snake.pos.x, this.map.col - 1));
+      updateFlag = true;
     }
-    if (this.snake.pos.x > this.tileCount - 1) {
-      this.snake.pos.x = 0;
+    if (tentativeX > this.map.col - 1) {
+      this.snake.updatePosition(this.map.getPoint(0, this.snake.pos.y));
+      updateFlag = true;
     }
-    if (this.snake.pos.y > this.tileCount - 1) {
-      this.snake.pos.y = 0;
+    if (tentativeY > this.map.row - 1) {
+      this.snake.updatePosition(this.map.getPoint(this.snake.pos.x, 0));
+      updateFlag = true;
     }
 
+    if (!updateFlag) {
+      this.snake.updatePosition(this.map.getPoint(tentativeX, tentativeY));
+    }
+
+    // check trail collision
     this.snake.trail.forEach(t => {
       if (this.snake.pos.x === t.x && this.snake.pos.y === t.y) {
         this.reset();
       }
     });
 
-    this.snake.trail.push(new Point(this.snake.pos.x, this.snake.pos.y));
+    // update trail
+    this.snake.pos.occupied = true;
+    this.snake.trail.push(this.snake.pos);
     while (this.snake.trail.length > this.snake.tailLength) {
-      this.snake.trail.shift();
+      let p = this.snake.trail.shift();
+      p.occupied = false;
     }
 
+    // check if fruit has been eaten
     if (this.snake.pos.x === this.fruit.x && this.snake.pos.y ===
         this.fruit.y) {
       this.snake.tailLength++;
-      this.fruit.x = Math.floor(Math.random() * this.tileCount);
-      this.fruit.y = Math.floor(Math.random() * this.tileCount);
+      let tentativeFruitPos = this.map.getPoint(Math.floor(Math.random() * this.tileCount), Math.floor(Math.random() * this.tileCount));
+      while (tentativeFruitPos.occupied) {
+        tentativeFruitPos = this.map.getPoint(Math.floor(Math.random() * this.tileCount), Math.floor(Math.random() * this.tileCount));
+      }
+      this.fruit = tentativeFruitPos;
+      this.snake.pathfinder.resetMap();
+      this.snake.pathfinder.find(this.snake.pos, this.fruit);
     }
   }
 
@@ -92,6 +117,7 @@ export class Game {
       t.draw(this.context, 'White', this.gridSize);
     });
 
+    /*
     this.snake.pathfinder.openSet.forEach(p => {
       p.draw(this.context, 'Yellow', this.gridSize);
     });
@@ -100,6 +126,11 @@ export class Game {
       p.draw(this.context, 'Green', this.gridSize);
     });
 
+    this.snake.pathfinder.path.forEach(p => {
+      p.draw(this.context, `rgba(0, 0, 255, 0.5)`, this.gridSize);
+    });
+     */
+
     this.fruit.draw(this.context, 'Red', this.gridSize);
   }
 
@@ -107,6 +138,7 @@ export class Game {
    * @param {DocumentEventMap[string]} event
    */
   onKeyPress(event) {
+    // arrow keys
     if (event.keyCode === 37 && this.snake.velocity.x !== 1) {
       this.snake.velocity.x = -1;
       this.snake.velocity.y = 0;
@@ -123,6 +155,7 @@ export class Game {
       this.snake.velocity.x = 0;
       this.snake.velocity.y = 1;
     }
+    // ESC
     if (event.keyCode === 27) {
       this.reset();
     }

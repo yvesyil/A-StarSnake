@@ -18,7 +18,7 @@ export class Map {
 
     for (let i = 0; i < this.row; i++) {
       for (let j = 0; j < this.col; j++) {
-        this.grid[i][j].addNeighbors();
+        this.grid[i][j].addNeighbors(this);
       }
     }
   }

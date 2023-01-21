@@ -9,7 +9,7 @@ Array.prototype.remove = function(el) {
 }
 
 let game = new Game({
-    speed: 1000 /// 50
+    speed: 1000 / 100
 });
 window.onload = () => {
   game.start();
